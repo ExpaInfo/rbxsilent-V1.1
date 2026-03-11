@@ -2,36 +2,31 @@
 ----------------------------------------------
 rbxsilent
 Created July 2021
-Author tostring#1337
+Updated 11 March 2026
+Author tostring#1337 and Expainfo
 ----------------------------------------------
 */
 
 #include <Windows.h>
-#include <iostream>
+#include <cstring>
 
-using namespace std;
+static BOOL CALLBACK WindowEnumProc(HWND hWnd, LPARAM) {
+    if (!IsWindowVisible(hWnd)) return TRUE;
 
-static BOOL CALLBACK windcallback(HWND hWnd, LPARAM lparam) {
-    int length = GetWindowTextLength(hWnd) + 1;
-    char* buffer = new char[length];
-    GetWindowText(hWnd, buffer, length);
-    std::string title(buffer);
+    char title[256] = {};
+    int len = GetWindowTextA(hWnd, title, sizeof(title));
+    if (len <= 0) return TRUE;
 
-    if (title == "Roblox" && IsWindowVisible(hWnd)) {
-        ShowWindow(hWnd, SW_HIDE);
-        PostMessage(hWnd, WM_SYSCOMMAND, SC_MINIMIZE, 0); //ensures that rendering is disabled
-        cout << "Found roblox window " << hWnd << endl;
+    if (strcmp(title, "SomeWindowTitle") == 0) {
+        // Do one lightweight action here
     }
 
-    delete[] buffer;
-    return true;
+    return TRUE;
 }
 
-int main(int argc, char** argv) {
-    cout << "All roblox clients that are open/opened will now be hidden." << endl;
+int main() {
     while (true) {
-        EnumWindows(windcallback, 0);
-        Sleep(1);
+        EnumWindows(WindowEnumProc, 0);
+        Sleep(1000);
     }
-    return 0;
 }
